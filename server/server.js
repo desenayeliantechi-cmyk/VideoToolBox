@@ -48,14 +48,9 @@ if (!fs.existsSync(DOWNLOADS_DIR)) {
 if (!fs.existsSync(YTDLP_PATH)) {
 
     console.error("");
-    console.error(
-        "❌ No se encontró yt-dlp.exe"
-    );
-
-    console.error(
-        `📁 Ruta esperada: ${YTDLP_PATH}`
-    );
-
+    console.error("No se encontró yt-dlp.");
+    console.error("Ruta esperada:");
+    console.error(YTDLP_PATH);
     console.error("");
 
 }
@@ -368,7 +363,7 @@ function runYtDlp(
 
                 reject(
                     new Error(
-                        "No se encontró yt-dlp.exe en la carpeta server."
+                        "No se encontró yt-dlp en la carpeta server."
                     )
                 );
 
@@ -896,6 +891,20 @@ const server =
 
 
             // =================================================
+            // OBTENER RUTA REAL
+            // =================================================
+
+            const requestURL =
+                new URL(
+                    req.url,
+                    `http://localhost:${PORT}`
+                );
+
+            const requestPath =
+                requestURL.pathname;
+
+
+            // =================================================
             // OPTIONS
             // =================================================
 
@@ -916,12 +925,46 @@ const server =
 
 
             // =================================================
+            // GET /
+            // =================================================
+
+            if (
+                req.method === "GET" &&
+                requestPath === "/"
+            ) {
+
+                sendJSON(
+                    res,
+                    200,
+                    {
+
+                        success:
+                            true,
+
+                        server:
+                            "VideoToolBox API",
+
+                        message:
+                            "VideoToolBox está funcionando correctamente.",
+
+                        version:
+                            "1.0"
+
+                    }
+                );
+
+                return;
+
+            }
+
+
+            // =================================================
             // GET /api/status
             // =================================================
 
             if (
                 req.method === "GET" &&
-                req.url === "/api/status"
+                requestPath === "/api/status"
             ) {
 
                 sendJSON(
@@ -974,7 +1017,7 @@ const server =
 
             if (
                 req.method === "POST" &&
-                req.url === "/api/upload"
+                requestPath === "/api/upload"
             ) {
 
                 upload.single("video")(
@@ -1081,7 +1124,7 @@ const server =
 
             if (
                 req.method === "POST" &&
-                req.url === "/api/analyze"
+                requestPath === "/api/analyze"
             ) {
 
                 try {
@@ -1211,7 +1254,7 @@ const server =
 
             if (
                 req.method === "POST" &&
-                req.url === "/api/metadata"
+                requestPath === "/api/metadata"
             ) {
 
                 try {
@@ -1375,7 +1418,7 @@ const server =
 
             if (
                 req.method === "POST" &&
-                req.url === "/api/download-url"
+                requestPath === "/api/download-url"
             ) {
 
                 try {
@@ -1548,7 +1591,7 @@ const server =
 
             if (
                 req.method === "POST" &&
-                req.url === "/api/convert"
+                requestPath === "/api/convert"
             ) {
 
                 try {
@@ -1789,22 +1832,13 @@ const server =
 
             if (
                 req.method === "GET" &&
-                req.url.startsWith(
-                    "/api/download"
-                )
+                requestPath === "/api/download"
             ) {
 
                 try {
 
-                    const parsedUrl =
-                        new URL(
-                            req.url,
-                            `http://localhost:${PORT}`
-                        );
-
-
                     const file =
-                        parsedUrl.searchParams.get(
+                        requestURL.searchParams.get(
                             "file"
                         );
 
@@ -1924,19 +1958,23 @@ const server =
                     );
 
 
-                    sendJSON(
-                        res,
-                        500,
-                        {
+                    if (!res.headersSent) {
 
-                            success:
-                                false,
+                        sendJSON(
+                            res,
+                            500,
+                            {
 
-                            message:
-                                "No se pudo descargar el archivo."
+                                success:
+                                    false,
 
-                        }
-                    );
+                                message:
+                                    "No se pudo descargar el archivo."
+
+                            }
+                        );
+
+                    }
 
                 }
 
