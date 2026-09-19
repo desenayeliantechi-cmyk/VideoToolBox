@@ -39,9 +39,9 @@ RUN cd /opt/bgutil-ytdlp-pot-provider/server \
 # de plugins de yt-dlp
 # ============================================================
 
-RUN mkdir -p /root/.config/yt-dlp/plugins \
-    && cd /opt/bgutil-ytdlp-pot-provider \
-    && git archive --format=zip --output=/root/.config/yt-dlp/plugins/bgutil-ytdlp-pot-provider.zip 2.0.0 plugin
+RUN mkdir -p /root/yt-dlp-plugins \
+    && cp -r /opt/bgutil-ytdlp-pot-provider/plugin \
+       /root/yt-dlp-plugins/bgutil-ytdlp-pot-provider
 
 # ============================================================
 
