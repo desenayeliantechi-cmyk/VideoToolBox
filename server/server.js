@@ -960,163 +960,68 @@ const server =
 
 
             // =================================================
-            // GET /api/status
-            // =================================================
+// GET /api/debug-pot
+// =================================================
 
-            if (
-                req.method === "GET" &&
-                requestPath === "/api/status"
-            ) {
+if (
+    req.method === "GET" &&
+    requestPath === "/api/debug-pot"
+) {
 
-                sendJSON(
-                    res,
-                    200,
-                    {
+    try {
 
-                        success:
-                            true,
+        const pluginPath =
+            "/root/yt-dlp-plugins/bgutil-ytdlp-pot-provider";
 
-                        server:
-                            "VideoToolBox API",
+        const scriptPath =
+            "/opt/bgutil-ytdlp-pot-provider/server/build/generate_once.js";
 
-                        status:
-                            "online",
+        sendJSON(
+            res,
+            200,
+            {
 
-                        port:
-                            PORT,
+                success: true,
 
-                        ffmpeg:
-                            "available",
+                pluginExists:
+                    fs.existsSync(
+                        pluginPath
+                    ),
 
-                        ytdlp:
-                            fs.existsSync(
-                                YTDLP_PATH
-                            )
-                                ? "available"
-                                : "missing",
+                scriptExists:
+                    fs.existsSync(
+                        scriptPath
+                    ),
 
-                        upload:
-                            "available",
+                pluginPath:
+                    pluginPath,
 
-                        conversion:
-                            "available",
-
-                        urlDownload:
-                            "available"
-
-                    }
-                );
-
-                return;
+                scriptPath:
+                    scriptPath
 
             }
+        );
 
+    } catch (error) {
 
-            // =================================================
-            // POST /api/upload
-            // =================================================
+        sendJSON(
+            res,
+            500,
+            {
 
-            if (
-                req.method === "POST" &&
-                requestPath === "/api/upload"
-            ) {
+                success: false,
 
-                upload.single("video")(
-                    req,
-                    res,
-                    function(error) {
-
-                        if (error) {
-
-                            console.error(
-                                "❌ Error al subir:"
-                            );
-
-                            console.error(
-                                error
-                            );
-
-                            sendJSON(
-                                res,
-                                400,
-                                {
-
-                                    success:
-                                        false,
-
-                                    message:
-                                        error.message
-
-                                }
-                            );
-
-                            return;
-
-                        }
-
-
-                        if (!req.file) {
-
-                            sendJSON(
-                                res,
-                                400,
-                                {
-
-                                    success:
-                                        false,
-
-                                    message:
-                                        "No se recibió ningún archivo."
-
-                                }
-                            );
-
-                            return;
-
-                        }
-
-
-                        console.log(
-                            "📁 Archivo recibido:"
-                        );
-
-                        console.log(
-                            req.file.filename
-                        );
-
-
-                        sendJSON(
-                            res,
-                            200,
-                            {
-
-                                success:
-                                    true,
-
-                                message:
-                                    "Archivo subido correctamente.",
-
-                                file:
-                                    req.file.filename,
-
-                                originalName:
-                                    req.file.originalname,
-
-                                size:
-                                    req.file.size,
-
-                                path:
-                                    req.file.path
-
-                            }
-                        );
-
-                    }
-                );
-
-                return;
+                error:
+                    error.message
 
             }
+        );
+
+    }
+
+    return;
+
+}
 
 
             // =================================================
