@@ -444,21 +444,16 @@ async function getVideoMetadata(url) {
     );
 
     const args = [
-
-        "--js-runtimes",
-        "node",
-
-        "--dump-single-json",
-
-        "--skip-download",
-
-        "--no-warnings",
-
-        "--no-playlist",
-
-        url
-
-    ];
+    "--js-runtimes",
+    "node",
+    "--extractor-args",
+    "youtube:player_client=android",
+    "--dump-single-json",
+    "--skip-download",
+    "--no-warnings",
+    "--no-playlist",
+    url
+];
 
     const result =
         await runYtDlp(
