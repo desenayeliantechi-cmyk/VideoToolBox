@@ -11,6 +11,9 @@ COPY server/install-ytdlp.js ./server/
 
 RUN cd server && npm install
 
+# Instalar yt-dlp directamente durante el build
+RUN node server/install-ytdlp.js
+
 COPY . .
 
 RUN chmod +x server/yt-dlp 2>/dev/null || true
