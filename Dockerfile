@@ -25,28 +25,21 @@ RUN node server/install-ytdlp.js
 # Instalar bgutil-ytdlp-pot-provider 2.0.0
 # ============================================================
 
+RUN mkdir -p /root/.config/yt-dlp/plugins \
+    && curl -L \
+    "https://github.com/Brainicism/bgutil-ytdlp-pot-provider/releases/download/2.0.0/bgutil-ytdlp-pot-provider.zip" \
+    -o /root/.config/yt-dlp/plugins/bgutil-ytdlp-pot-provider.zip
+
+# Instalar el proveedor de generación de PO Tokens
 RUN git clone --single-branch --branch 2.0.0 \
     https://github.com/Brainicism/bgutil-ytdlp-pot-provider.git \
     /opt/bgutil-ytdlp-pot-provider
 
-# Compilar el proveedor
 RUN cd /opt/bgutil-ytdlp-pot-provider/server \
     && npm ci \
     && npx tsc
 
 # ============================================================
-# Instalar el plugin como ZIP en la carpeta oficial
-# de plugins de yt-dlp
-# ============================================================
-
-RUN mkdir -p /root/yt-dlp-plugins \
-    && cp -r /opt/bgutil-ytdlp-pot-provider/plugin \
-       /root/yt-dlp-plugins/bgutil-ytdlp-pot-provider
-
-# ============================================================
-
-COPY . .
-
 RUN chmod +x server/yt-dlp 2>/dev/null || true
 
 EXPOSE 3000
