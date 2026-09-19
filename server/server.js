@@ -446,12 +446,18 @@ async function getVideoMetadata(url) {
     const args = [
     "--js-runtimes",
     "node",
+
     "--extractor-args",
-    "youtube:player_client=android",
+    "youtubepot-bgutilscript:script_path=/opt/bgutil-ytdlp-pot-provider/server/build/generate_once.js",
+
+    "--extractor-args",
+    "youtube:player-client=mweb",
+
     "--dump-single-json",
     "--skip-download",
     "--no-warnings",
     "--no-playlist",
+
     url
 ];
 
