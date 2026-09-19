@@ -1,47 +1,47 @@
 FROM node:24-bookworm
 
+# Instalar FFmpeg y herramientas necesarias
 RUN apt-get update \
     && apt-get install -y ffmpeg python3 curl unzip git \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# ============================================================
-# Instalar dependencias del servidor
-# ============================================================
-
+# Copiar primero los archivos necesarios del servidor
 COPY server/package*.json ./server/
 COPY server/install-ytdlp.js ./server/
 
-RUN cd server && npm install
+# Instalar dependencias del servidor
+RUN cd /app/server && npm install
 
-# ============================================================
-# Instalar yt-dlp
-# ============================================================
+# Instalar yt-dlp para Linux
+RUN node /app/server/install-ytdlp.js
 
-RUN node server/install-ytdlp.js
-
-# ============================================================
-# Instalar bgutil-ytdlp-pot-provider 2.0.0
-# ============================================================
-
+# Instalar plugin bgutil
 RUN mkdir -p /root/.config/yt-dlp/plugins \
     && curl -L \
     "https://github.com/Brainicism/bgutil-ytdlp-pot-provider/releases/download/2.0.0/bgutil-ytdlp-pot-provider.zip" \
     -o /root/.config/yt-dlp/plugins/bgutil-ytdlp-pot-provider.zip
 
-# Instalar el proveedor de generación de PO Tokens
+# Descargar bgutil para generar el proveedor de PO Token
 RUN git clone --single-branch --branch 2.0.0 \
     https://github.com/Brainicism/bgutil-ytdlp-pot-provider.git \
     /opt/bgutil-ytdlp-pot-provider
 
+# Compilar bgutil
 RUN cd /opt/bgutil-ytdlp-pot-provider/server \
     && npm ci \
     && npx tsc
 
-# ============================================================
-RUN chmod +x server/yt-dlp 2>/dev/null || true
+# AHORA copiar el proyecto completo
+COPY . /app
+
+# Asegurar permisos de yt-dlp
+RUN chmod +x /app/server/yt-dlp 2>/dev/null || true
+
+# Verificar que server.js existe
+RUN test -f /app/server/server.js
 
 EXPOSE 3000
 
-CMD ["node", "server/server.js"]
+CMD ["node", "/app/server/server.js"]
