@@ -7,6 +7,7 @@ RUN apt-get update \
 WORKDIR /app
 
 COPY server/package*.json ./server/
+COPY server/install-ytdlp.js ./server/
 
 RUN cd server && npm install
 
