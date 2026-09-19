@@ -963,6 +963,49 @@ const server =
 // GET /api/debug-pot
 // =================================================
 
+// =================================================
+// GET /api/debug-ytdlp
+// =================================================
+
+if (
+    req.method === "GET" &&
+    requestPath === "/api/debug-ytdlp"
+) {
+
+    try {
+
+        const result = await runYtDlp([
+            "--verbose",
+            "--simulate"
+        ]);
+
+        sendJSON(
+            res,
+            200,
+            {
+                success: true,
+                output: result.stdout,
+                errors: result.stderr
+            }
+        );
+
+    } catch (error) {
+
+        sendJSON(
+            res,
+            500,
+            {
+                success: false,
+                error: error.message
+            }
+        );
+
+    }
+
+    return;
+
+}
+
 if (
     req.method === "GET" &&
     requestPath === "/api/debug-pot"
