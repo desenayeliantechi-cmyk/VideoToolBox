@@ -11,7 +11,7 @@ require("dotenv").config();
 // CONFIGURACIÓN
 // ============================================================
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const DOWNLOADS_DIR =
     path.join(__dirname, "downloads");
