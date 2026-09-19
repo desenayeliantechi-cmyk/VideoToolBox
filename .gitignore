@@ -1,3 +1,4 @@
 server/node_modules/
 server/downloads/
 server/.env
+server/yt-dlp

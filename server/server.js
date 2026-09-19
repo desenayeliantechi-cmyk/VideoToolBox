@@ -16,8 +16,13 @@ const PORT = process.env.PORT || 3000;
 const DOWNLOADS_DIR =
     path.join(__dirname, "downloads");
 
+const YTDLP_FILENAME =
+    process.platform === "win32"
+        ? "yt-dlp.exe"
+        : "yt-dlp";
+
 const YTDLP_PATH =
-    path.join(__dirname, "yt-dlp.exe");
+    path.join(__dirname, YTDLP_FILENAME);
 
 
 // ============================================================
