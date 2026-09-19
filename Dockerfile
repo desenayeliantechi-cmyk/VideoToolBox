@@ -6,12 +6,19 @@ RUN apt-get update \
 
 WORKDIR /app
 
+# ============================================================
+# Instalar dependencias del servidor
+# ============================================================
+
 COPY server/package*.json ./server/
 COPY server/install-ytdlp.js ./server/
 
 RUN cd server && npm install
 
+# ============================================================
 # Instalar yt-dlp
+# ============================================================
+
 RUN node server/install-ytdlp.js
 
 # ============================================================
@@ -22,15 +29,19 @@ RUN git clone --single-branch --branch 2.0.0 \
     https://github.com/Brainicism/bgutil-ytdlp-pot-provider.git \
     /opt/bgutil-ytdlp-pot-provider
 
-# Instalar dependencias del proveedor
+# Compilar el proveedor
 RUN cd /opt/bgutil-ytdlp-pot-provider/server \
     && npm ci \
     && npx tsc
 
-# Instalar el plugin en la carpeta que reconoce yt-dlp
-RUN mkdir -p /root/yt-dlp-plugins/bgutil-ytdlp-pot-provider \
-    && cp -r /opt/bgutil-ytdlp-pot-provider/plugin/* \
-       /root/yt-dlp-plugins/bgutil-ytdlp-pot-provider/
+# ============================================================
+# Instalar el plugin como ZIP en la carpeta oficial
+# de plugins de yt-dlp
+# ============================================================
+
+RUN mkdir -p /root/.config/yt-dlp/plugins \
+    && cd /opt/bgutil-ytdlp-pot-provider \
+    && git archive --format=zip --output=/root/.config/yt-dlp/plugins/bgutil-ytdlp-pot-provider.zip 2.0.0 plugin
 
 # ============================================================
 
